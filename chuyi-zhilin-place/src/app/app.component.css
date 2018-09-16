@@ -1,0 +1,4 @@
+/* AppComponent's private CSS styles */
+.nav a.active {
+    color: #f6f9fa;
+}
