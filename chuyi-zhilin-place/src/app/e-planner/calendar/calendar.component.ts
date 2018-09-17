@@ -41,6 +41,20 @@ const colors: any = {
   }
 };
 
+interface RecurringEvent {
+  title: string;
+  start: Date;
+  end?: Date;
+  recurringTimes: number;
+  color: {
+    primary: string,
+    secondary: string,
+  };
+  byMonth?: boolean;
+  byWeek?: boolean;
+  byDay?: boolean;
+}
+
 @Component({
   selector: 'app-calendar',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -91,7 +105,6 @@ export class CalendarComponent implements OnInit {
         afterEnd: true,
       },
       draggable: true,
-      meta: {}, // we can try to add some recurrent events definitions here.
     },
     {
       start: startOfDay(new Date()),
@@ -119,6 +132,11 @@ export class CalendarComponent implements OnInit {
       draggable: true
     }
   ];
+
+  currentViewEvents: CalendarEvent[] = [];
+  recurringEvents: RecurringEvent[];
+  eventsFromNormal: CalendarEvent[] = [];
+  eventsFromRecurring: CalendarEvent[] = [];
 
   activeDayIsOpen = true;
 
@@ -160,7 +178,10 @@ export class CalendarComponent implements OnInit {
       title: 'New event',
       start: startOfDay(new Date()),
       end: endOfDay(new Date()),
-      color: colors.red,
+      color: {
+        primary: '#000000',
+        secondary: '#555555',
+      },
       draggable: true,
       resizable: {
         beforeStart: true,
@@ -168,6 +189,45 @@ export class CalendarComponent implements OnInit {
       }
     });
     this.refresh.next();
+  }
+
+  addRecurringEvent(): void {
+    this.recurringEvents.push({
+      title: 'New Recurring Event',
+      start: startOfDay(new Date()),
+      recurringTimes: 10,
+      color: {
+        primary: '#000000',
+        secondary: '#555555',
+      },
+      byWeek: true,
+      byMonth: false,
+      byDay: false,
+    });
+  }
+
+  changeEventList(): void {
+
+  }
+
+  reCalRecurringEvents(): void {
+    for (const recurringEvent of this.recurringEvents) {
+      if (!recurringEvent.byWeek && !recurringEvent.byDay) {alert(`Something wrong for ${recurringEvent.title}`); }
+      const dayGap = recurringEvent.byWeek ? 7 : ( recurringEvent.byDay ? 1 : 30 );
+      for (const index of Array.from(Array(recurringEvent.recurringTimes).keys())) { // Start from 0
+        this.eventsFromRecurring.push({
+          title: `Event ${index} for ${recurringEvent.title}`,
+          start: addDays(recurringEvent.start, dayGap * index),
+          end: recurringEvent.end ? addDays(recurringEvent.end, dayGap * index) : undefined,
+          color: recurringEvent.color,
+          draggable: true,
+          resizable: {
+            beforeStart: true,
+            afterEnd: true,
+          }
+        });
+      }
+    }
   }
 
 }

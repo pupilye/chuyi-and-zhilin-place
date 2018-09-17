@@ -28,13 +28,14 @@
         mwlCalendarPreviousView
         [view]="view"
         [(viewDate)]="viewDate"
-        (viewDateChange)="activeDayIsOpen = false">
+        (viewDateChange)="activeDayIsOpen = false; changeEventList()">
         Previous
       </div>
       <div
         class="btn btn-outline-secondary"
         mwlCalendarToday
-        [(viewDate)]="viewDate">
+        [(viewDate)]="viewDate"
+        (viewDateChange)="changeEventList()">
         Today
       </div>
       <div
@@ -42,7 +43,7 @@
         mwlCalendarNextView
         [view]="view"
         [(viewDate)]="viewDate"
-        (viewDateChange)="activeDayIsOpen = false">
+        (viewDateChange)="activeDayIsOpen = false; changeEventList()">
         Next
       </div>
     </div>
@@ -54,19 +55,19 @@
     <div class="btn-group">
       <div
         class="btn btn-primary"
-        (click)="view = CalendarView.Month"
+        (click)="view = CalendarView.Month; changeEventList()"
         [class.active]="view === CalendarView.Month">
         Month
       </div>
       <div
         class="btn btn-primary"
-        (click)="view = CalendarView.Week"
+        (click)="view = CalendarView.Week; changeEventList()"
         [class.active]="view === CalendarView.Week">
         Week
       </div>
       <div
         class="btn btn-primary"
-        (click)="view = CalendarView.Day"
+        (click)="view = CalendarView.Day; changeEventList()"
         [class.active]="view === CalendarView.Day">
         Day
       </div>
@@ -89,6 +90,8 @@
     *ngSwitchCase="CalendarView.Week"
     [viewDate]="viewDate"
     [events]="events"
+    [dayStartHour]="7"
+    [dayEndHour]="23"
     [refresh]="refresh"
     (eventClicked)="handleEvent('Clicked', $event.event)"
     (eventTimesChanged)="eventTimesChanged($event)">
@@ -97,6 +100,8 @@
     *ngSwitchCase="CalendarView.Day"
     [viewDate]="viewDate"
     [events]="events"
+    [dayStartHour]="7"
+    [dayEndHour]="23"
     [refresh]="refresh"
     (eventClicked)="handleEvent('Clicked', $event.event)"
     (eventTimesChanged)="eventTimesChanged($event)">
@@ -106,11 +111,11 @@
 <br><br><br>
 
 <h3>
-  Edit events
+  Edit Events
   <button
     class="btn btn-primary pull-right"
     (click)="addEvent()">
-    Add new
+    Add New
   </button>
   <div class="clearfix"></div>
 </h3>
@@ -120,8 +125,8 @@
   <thead>
     <tr>
       <th>Title</th>
-      <th>Primary color</th>
-      <th>Secondary color</th>
+      <th>Primary Color</th>
+      <th>Secondary Color</th>
       <th>Starts at</th>
       <th>Ends at</th>
       <th>Remove</th>
@@ -188,3 +193,101 @@
   </tbody>
 
 </table>
+
+<h3>
+    <button
+      class="btn btn-primary pull-right"
+      (click)="addRecurringEvent()">
+      Add Recurring
+    </button>
+    <div class="clearfix"></div>
+</h3>
+
+<table class="table table-bordered">
+
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Primary color</th>
+        <th>Secondary color</th>
+        <th>Starts at</th>
+        <th>Ends at</th>
+        <th>Recurring Frequency</th>
+        <th>Remove</th>
+      </tr>
+    </thead>
+  
+    <tbody>
+      <tr *ngFor="let event of events; let index = index">
+        <td>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="event.title"
+            (keyup)="refresh.next()">
+        </td>
+        <td>
+          <input
+            type="color"
+            [(ngModel)]="event.color.primary"
+            (change)="refresh.next()">
+        </td>
+        <td>
+          <input
+            type="color"
+            [(ngModel)]="event.color.secondary"
+            (change)="refresh.next()">
+        </td>
+        <td>
+          <input
+            class="form-control"
+            type="text"
+            mwlFlatpickr
+            [(ngModel)]="event.start"
+            (ngModelChange)="refresh.next()"
+            [altInput]="true"
+            [convertModelValue]="true"
+            [enableTime]="true"
+            dateFormat="Y-m-dTH:i"
+            altFormat="F j, Y H:i"
+            placeholder="Not set">
+        </td>
+        <td>
+          <input
+            class="form-control"
+            type="text"
+            mwlFlatpickr
+            [(ngModel)]="event.end"
+            (ngModelChange)="refresh.next()"
+            [altInput]="true"
+            [convertModelValue]="true"
+            [enableTime]="true"
+            dateFormat="Y-m-dTH:i"
+            altFormat="F j, Y H:i"
+            placeholder="Not set">
+        </td>
+        <td>
+            <div class="row">
+                <div class="col">
+                  <div ngbDropdown class="d-inline-block">
+                    <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Toggle dropdown</button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                      <button class="dropdown-item">Action - 1</button>
+                      <button class="dropdown-item">Another Action</button>
+                      <button class="dropdown-item">Something else is here</button>
+                    </div>
+                  </div>
+                </div>
+                </div>
+        </td>
+        <td>
+          <button
+            class="btn btn-danger"
+            (click)="events.splice(index, 1); refresh.next()">
+            Delete
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  
+  </table>

@@ -31,6 +31,7 @@ import { CalendarComponent } from './e-planner/calendar/calendar.component';
     FormsModule,
     BrowserModule,
     AppRoutingModule,
+    NgbModule,
     NgbModalModule,
     FlatpickrModule.forRoot(),
     CalendarModule.forRoot({
