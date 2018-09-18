@@ -91,60 +91,56 @@ export class CalendarComponent implements OnInit {
 
   refresh: Subject<any> = new Subject();
 
-  // events: CalendarEvent[] = [
-  //   {
-  //     start: subDays(startOfDay(new Date()), 1),
-  //     end: addDays(new Date(), 1),
-  //     title: 'A 3 day event',
-  //     color: colors.red,
-  //     actions: this.actions,
-  //     allDay: true,
-  //     resizable: {
-  //       beforeStart: true,
-  //       afterEnd: true,
-  //     },
-  //     draggable: true,
-  //   },
-  //   {
-  //     start: startOfDay(new Date()),
-  //     title: 'An event with no end date',
-  //     color: colors.yellow,
-  //     actions: this.actions
-  //   },
-  //   {
-  //     start: subDays(endOfMonth(new Date()), 3),
-  //     end: addDays(endOfMonth(new Date()), 3),
-  //     title: 'A long event that spans 2 months',
-  //     color: colors.blue,
-  //     allDay: true
-  //   },
-  //   {
-  //     start: addHours(startOfDay(new Date()), 2),
-  //     end: new Date(),
-  //     title: 'A draggable and resizable event',
-  //     color: colors.yellow,
-  //     actions: this.actions,
-  //     resizable: {
-  //       beforeStart: true,
-  //       afterEnd: true
-  //     },
-  //     draggable: true
-  //   }
-  // ];
-
   currentViewEvents: CalendarEvent[] = [];
   recurringEvents: RecurringEvent[] = [{
-    title: 'New Recurring Events',
-    start: startOfDay(new Date()),
-    end: addDays(new Date(), 1),
+    title: 'Monday Lesson',
+    start: new Date('2018-09-24T18:30:00'),
+    end: new Date('2018-09-24T21:00:00'),
     recurringTimes: 10,
     color: {
-      primary: '#000000',
-      secondary: '#555555'
+      primary: '#e3bc08',
+      secondary: '#FDF1BA',
     },
-    by: 'week',
+    by: 'Week',
     id: this.dayToString(new Date()),
-  }];
+  },
+  {
+    title: 'Wednesday Lesson',
+    start: new Date('2018-09-26T18:30:00'),
+    end: new Date('2018-09-26T21:00:00'),
+    recurringTimes: 10,
+    color: {
+      primary: '#e3bc08',
+      secondary: '#FDF1BA',
+    },
+    by: 'Week',
+    id: this.dayToString(new Date()),
+  },
+  {
+    title: 'Thursday Lesson',
+    start: new Date('2018-09-27T18:30:00'),
+    end: new Date('2018-09-27T21:00:00'),
+    recurringTimes: 10,
+    color: {
+      primary: '#e3bc08',
+      secondary: '#FDF1BA',
+    },
+    by: 'Week',
+    id: this.dayToString(new Date()),
+  },
+  {
+    title: 'Friday Lesson',
+    start: new Date('2018-09-28T16:30:00'),
+    end: new Date('2018-09-28T17:30:00'),
+    recurringTimes: 10,
+    color: {
+      primary: '#e3bc08',
+      secondary: '#FDF1BA',
+    },
+    by: 'Week',
+    id: this.dayToString(new Date()),
+  }
+];
 
   eventsFromNormal: CalendarEvent[] = [
     {
@@ -159,6 +155,9 @@ export class CalendarComponent implements OnInit {
         afterEnd: true,
       },
       draggable: true,
+      meta: {
+        id: this.dayToString(new Date()),
+      }
     },
     {
       start: startOfDay(new Date()),
@@ -171,7 +170,10 @@ export class CalendarComponent implements OnInit {
       end: addDays(endOfMonth(new Date()), 3),
       title: 'A long event that spans 2 months',
       color: colors.blue,
-      allDay: true
+      allDay: true,
+      meta: {
+        id: this.dayToString(new Date()),
+      }
     },
     {
       start: addHours(startOfDay(new Date()), 2),
@@ -183,7 +185,10 @@ export class CalendarComponent implements OnInit {
         beforeStart: true,
         afterEnd: true
       },
-      draggable: true
+      draggable: true,
+      meta: {
+        id: this.dayToString(new Date()),
+      }
     }
   ];
   eventsFromRecurring: CalendarEvent[] = [];
@@ -231,13 +236,16 @@ export class CalendarComponent implements OnInit {
       start: startOfDay(new Date()),
       end: endOfDay(new Date()),
       color: {
-        primary: '#000000',
-        secondary: '#555555',
+        primary: '#ad2121',
+        secondary: '#FAE3E3',
       },
       draggable: true,
       resizable: {
         beforeStart: true,
         afterEnd: true,
+      },
+      meta: {
+        id: this.dayToString(new Date()),
       }
     });
     this.eventUpdate();
@@ -250,10 +258,10 @@ export class CalendarComponent implements OnInit {
       start: startOfDay(new Date()),
       recurringTimes: 10,
       color: {
-        primary: '#000000',
-        secondary: '#555555',
+        primary: '#e3bc08',
+        secondary: '#FDF1BA',
       },
-      by: 'week',
+      by: 'Week',
       id: this.dayToString(new Date()),
     });
   }
@@ -265,10 +273,10 @@ export class CalendarComponent implements OnInit {
   reCalRecurringEvents(): void {
     this.eventsFromRecurring = [];
     for (const recurringEvent of this.recurringEvents) {
-      if (!(recurringEvent.by === 'week' || recurringEvent.by === 'day' || recurringEvent.by === 'month')) {
+      if (!(recurringEvent.by === 'Week' || recurringEvent.by === 'Day' || recurringEvent.by === 'Month')) {
         alert(`Something wrong for ${recurringEvent.title}`);
       }
-      const dayGap = recurringEvent.by === 'week' ? 7 : ( recurringEvent.by === 'day' ? 1 : 30 );
+      const dayGap = recurringEvent.by === 'Week' ? 7 : ( recurringEvent.by === 'Day' ? 1 : 30 );
       for (const index of Array.from(Array(recurringEvent.recurringTimes).keys())) { // Start from 0
         this.eventsFromRecurring.push({
           title: `Event ${index} for ${recurringEvent.title}`,

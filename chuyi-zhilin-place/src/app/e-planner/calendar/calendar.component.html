@@ -182,7 +182,7 @@
           altFormat="F j, Y H:i"
           placeholder="Not set">
       </td>
-      <td>
+      <td class="td-small">
         <button
           class="btn btn-danger"
           (click)="eventsFromNormal.splice(index, 1); eventUpdate(); refresh.next()">
@@ -218,6 +218,7 @@
         <th>Starts at</th>
         <th>Ends at</th>
         <th>Recurring Frequency</th>
+        <th>Times</th>
         <th>Remove</th>
       </tr>
     </thead>
@@ -275,17 +276,24 @@
             <div class="row">
                 <div class="col">
                   <div ngbDropdown class="d-inline-block">
-                    <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Toggle dropdown</button>
+                    <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>By {{recurringEvent.by}}</button>
                     <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-                      <button class="dropdown-item" (click)="recurringEvent.by='week'">By Week</button>
-                      <button class="dropdown-item" (click)="recurringEvent.by='month'">By Month</button>
-                      <button class="dropdown-item" (click)="recurringEvent.by='day'">By Day</button>
+                      <button class="dropdown-item" (click)="recurringEvent.by='Week'">By Week</button>
+                      <button class="dropdown-item" (click)="recurringEvent.by='Month'">By Month</button>
+                      <button class="dropdown-item" (click)="recurringEvent.by='Day'">By Day</button>
                     </div>
                   </div>
                 </div>
                 </div>
         </td>
-        <td>
+        <td class="td-small">
+            <input
+              type="text"
+              class="form-control recurringTime"
+              [(ngModel)]="recurringEvent.recurringTimes"
+              (keyup)="refresh.next()">
+          </td>
+        <td class="td-small">
           <button
             class="btn btn-danger"
             (click)="recurringEvents.splice(index, 1); reCalRecurringEvents(); refresh.next()">
