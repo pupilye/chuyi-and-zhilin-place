@@ -114,7 +114,7 @@
   Edit Events
   <button
     class="btn btn-primary pull-right"
-    (click)="addEvent()">
+    (click)="addNormalEvent()">
     Add New
   </button>
   <div class="clearfix"></div>
@@ -134,24 +134,24 @@
   </thead>
 
   <tbody>
-    <tr *ngFor="let event of events; let index = index">
+    <tr *ngFor="let normalEvent of eventsFromNormal; let index = index">
       <td>
         <input
           type="text"
           class="form-control"
-          [(ngModel)]="event.title"
+          [(ngModel)]="normalEvent.title"
           (keyup)="refresh.next()">
       </td>
       <td>
         <input
           type="color"
-          [(ngModel)]="event.color.primary"
+          [(ngModel)]="normalEvent.color.primary"
           (change)="refresh.next()">
       </td>
       <td>
         <input
           type="color"
-          [(ngModel)]="event.color.secondary"
+          [(ngModel)]="normalEvent.color.secondary"
           (change)="refresh.next()">
       </td>
       <td>
@@ -159,7 +159,7 @@
           class="form-control"
           type="text"
           mwlFlatpickr
-          [(ngModel)]="event.start"
+          [(ngModel)]="normalEvent.start"
           (ngModelChange)="refresh.next()"
           [altInput]="true"
           [convertModelValue]="true"
@@ -173,7 +173,7 @@
           class="form-control"
           type="text"
           mwlFlatpickr
-          [(ngModel)]="event.end"
+          [(ngModel)]="normalEvent.end"
           (ngModelChange)="refresh.next()"
           [altInput]="true"
           [convertModelValue]="true"
@@ -185,7 +185,7 @@
       <td>
         <button
           class="btn btn-danger"
-          (click)="events.splice(index, 1); refresh.next()">
+          (click)="eventsFromNormal.splice(index, 1); eventUpdate(); refresh.next()">
           Delete
         </button>
       </td>
@@ -199,6 +199,11 @@
       class="btn btn-primary pull-right"
       (click)="addRecurringEvent()">
       Add Recurring
+    </button>
+    <button
+      class="btn btn-secondary pull-right"
+      (click)="reCalRecurringEvents(); refresh.next()">
+      Confirm
     </button>
     <div class="clearfix"></div>
 </h3>
@@ -218,24 +223,24 @@
     </thead>
   
     <tbody>
-      <tr *ngFor="let event of events; let index = index">
+      <tr *ngFor="let recurringEvent of recurringEvents; let index = index">
         <td>
           <input
             type="text"
             class="form-control"
-            [(ngModel)]="event.title"
+            [(ngModel)]="recurringEvent.title"
             (keyup)="refresh.next()">
         </td>
         <td>
           <input
             type="color"
-            [(ngModel)]="event.color.primary"
+            [(ngModel)]="recurringEvent.color.primary"
             (change)="refresh.next()">
         </td>
         <td>
           <input
             type="color"
-            [(ngModel)]="event.color.secondary"
+            [(ngModel)]="recurringEvent.color.secondary"
             (change)="refresh.next()">
         </td>
         <td>
@@ -243,7 +248,7 @@
             class="form-control"
             type="text"
             mwlFlatpickr
-            [(ngModel)]="event.start"
+            [(ngModel)]="recurringEvent.start"
             (ngModelChange)="refresh.next()"
             [altInput]="true"
             [convertModelValue]="true"
@@ -257,7 +262,7 @@
             class="form-control"
             type="text"
             mwlFlatpickr
-            [(ngModel)]="event.end"
+            [(ngModel)]="recurringEvent.end"
             (ngModelChange)="refresh.next()"
             [altInput]="true"
             [convertModelValue]="true"
@@ -272,9 +277,9 @@
                   <div ngbDropdown class="d-inline-block">
                     <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Toggle dropdown</button>
                     <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-                      <button class="dropdown-item">Action - 1</button>
-                      <button class="dropdown-item">Another Action</button>
-                      <button class="dropdown-item">Something else is here</button>
+                      <button class="dropdown-item" (click)="recurringEvent.by='week'">By Week</button>
+                      <button class="dropdown-item" (click)="recurringEvent.by='month'">By Month</button>
+                      <button class="dropdown-item" (click)="recurringEvent.by='day'">By Day</button>
                     </div>
                   </div>
                 </div>
@@ -283,7 +288,7 @@
         <td>
           <button
             class="btn btn-danger"
-            (click)="events.splice(index, 1); refresh.next()">
+            (click)="recurringEvents.splice(index, 1); reCalRecurringEvents(); refresh.next()">
             Delete
           </button>
         </td>

@@ -50,9 +50,8 @@ interface RecurringEvent {
     primary: string,
     secondary: string,
   };
-  byMonth?: boolean;
-  byWeek?: boolean;
-  byDay?: boolean;
+  by: string;
+  id: string;
 }
 
 @Component({
@@ -92,7 +91,62 @@ export class CalendarComponent implements OnInit {
 
   refresh: Subject<any> = new Subject();
 
-  events: CalendarEvent[] = [
+  // events: CalendarEvent[] = [
+  //   {
+  //     start: subDays(startOfDay(new Date()), 1),
+  //     end: addDays(new Date(), 1),
+  //     title: 'A 3 day event',
+  //     color: colors.red,
+  //     actions: this.actions,
+  //     allDay: true,
+  //     resizable: {
+  //       beforeStart: true,
+  //       afterEnd: true,
+  //     },
+  //     draggable: true,
+  //   },
+  //   {
+  //     start: startOfDay(new Date()),
+  //     title: 'An event with no end date',
+  //     color: colors.yellow,
+  //     actions: this.actions
+  //   },
+  //   {
+  //     start: subDays(endOfMonth(new Date()), 3),
+  //     end: addDays(endOfMonth(new Date()), 3),
+  //     title: 'A long event that spans 2 months',
+  //     color: colors.blue,
+  //     allDay: true
+  //   },
+  //   {
+  //     start: addHours(startOfDay(new Date()), 2),
+  //     end: new Date(),
+  //     title: 'A draggable and resizable event',
+  //     color: colors.yellow,
+  //     actions: this.actions,
+  //     resizable: {
+  //       beforeStart: true,
+  //       afterEnd: true
+  //     },
+  //     draggable: true
+  //   }
+  // ];
+
+  currentViewEvents: CalendarEvent[] = [];
+  recurringEvents: RecurringEvent[] = [{
+    title: 'New Recurring Events',
+    start: startOfDay(new Date()),
+    end: addDays(new Date(), 1),
+    recurringTimes: 10,
+    color: {
+      primary: '#000000',
+      secondary: '#555555'
+    },
+    by: 'week',
+    id: this.dayToString(new Date()),
+  }];
+
+  eventsFromNormal: CalendarEvent[] = [
     {
       start: subDays(startOfDay(new Date()), 1),
       end: addDays(new Date(), 1),
@@ -132,17 +186,15 @@ export class CalendarComponent implements OnInit {
       draggable: true
     }
   ];
-
-  currentViewEvents: CalendarEvent[] = [];
-  recurringEvents: RecurringEvent[];
-  eventsFromNormal: CalendarEvent[] = [];
   eventsFromRecurring: CalendarEvent[] = [];
+  events: CalendarEvent[] = [];
 
   activeDayIsOpen = true;
 
   constructor(private modal: NgbModal) { }
 
   ngOnInit() {
+    this.events = this.eventsFromNormal.concat(this.eventsFromRecurring);
   }
 
   dayClicked({ date, events }: {date: Date; events: CalendarEvent[] }): void {
@@ -173,8 +225,8 @@ export class CalendarComponent implements OnInit {
     this.modal.open(this.modalContent, { size: 'lg' });
   }
 
-  addEvent(): void {
-    this.events.push({
+  addNormalEvent(): void {
+    this.eventsFromNormal.push({
       title: 'New event',
       start: startOfDay(new Date()),
       end: endOfDay(new Date()),
@@ -188,6 +240,7 @@ export class CalendarComponent implements OnInit {
         afterEnd: true,
       }
     });
+    this.eventUpdate();
     this.refresh.next();
   }
 
@@ -200,20 +253,22 @@ export class CalendarComponent implements OnInit {
         primary: '#000000',
         secondary: '#555555',
       },
-      byWeek: true,
-      byMonth: false,
-      byDay: false,
+      by: 'week',
+      id: this.dayToString(new Date()),
     });
   }
 
-  changeEventList(): void {
-
+  eventUpdate(): void {
+    this.events = this.eventsFromNormal.concat(this.eventsFromRecurring);
   }
 
   reCalRecurringEvents(): void {
+    this.eventsFromRecurring = [];
     for (const recurringEvent of this.recurringEvents) {
-      if (!recurringEvent.byWeek && !recurringEvent.byDay) {alert(`Something wrong for ${recurringEvent.title}`); }
-      const dayGap = recurringEvent.byWeek ? 7 : ( recurringEvent.byDay ? 1 : 30 );
+      if (!(recurringEvent.by === 'week' || recurringEvent.by === 'day' || recurringEvent.by === 'month')) {
+        alert(`Something wrong for ${recurringEvent.title}`);
+      }
+      const dayGap = recurringEvent.by === 'week' ? 7 : ( recurringEvent.by === 'day' ? 1 : 30 );
       for (const index of Array.from(Array(recurringEvent.recurringTimes).keys())) { // Start from 0
         this.eventsFromRecurring.push({
           title: `Event ${index} for ${recurringEvent.title}`,
@@ -224,10 +279,24 @@ export class CalendarComponent implements OnInit {
           resizable: {
             beforeStart: true,
             afterEnd: true,
+          },
+          meta: {
+            id: this.dayToString(new Date()),
           }
         });
       }
     }
+    this.eventUpdate();
+  }
+
+  dayToString(date: Date): string { // 'yyyymmddhhmmss'
+    const year = String(date.getUTCFullYear());
+    const month = date.getUTCMonth() < 10 ? String(date.getUTCMonth()) : String(date.getUTCMonth());
+    const day = date.getUTCDate() < 10 ? String(date.getUTCDay()) : String(date.getUTCDay());
+    const hour = date.getUTCHours() < 10 ? String(date.getUTCHours()) : String(date.getUTCHours());
+    const minute = date.getUTCMinutes() < 10 ? String(date.getUTCMinutes()) : String(date.getUTCMinutes());
+    const second = date.getUTCSeconds() < 10 ? String(date.getUTCSeconds()) : String(date.getUTCSeconds());
+    return year + month + day + hour + minute + second;
   }
 
 }
