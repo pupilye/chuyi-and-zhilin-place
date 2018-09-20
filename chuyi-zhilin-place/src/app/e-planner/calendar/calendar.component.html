@@ -28,14 +28,14 @@
         mwlCalendarPreviousView
         [view]="view"
         [(viewDate)]="viewDate"
-        (viewDateChange)="activeDayIsOpen = false; changeEventList()">
+        (viewDateChange)="activeDayIsOpen = false;">
         Previous
       </div>
       <div
         class="btn btn-outline-secondary"
         mwlCalendarToday
         [(viewDate)]="viewDate"
-        (viewDateChange)="changeEventList()">
+        (viewDateChange)="activeDayIsOpen = false;">
         Today
       </div>
       <div
@@ -43,7 +43,7 @@
         mwlCalendarNextView
         [view]="view"
         [(viewDate)]="viewDate"
-        (viewDateChange)="activeDayIsOpen = false; changeEventList()">
+        (viewDateChange)="activeDayIsOpen = false;">
         Next
       </div>
     </div>
@@ -55,19 +55,19 @@
     <div class="btn-group">
       <div
         class="btn btn-primary"
-        (click)="view = CalendarView.Month; changeEventList()"
+        (click)="view = CalendarView.Month;"
         [class.active]="view === CalendarView.Month">
         Month
       </div>
       <div
         class="btn btn-primary"
-        (click)="view = CalendarView.Week; changeEventList()"
+        (click)="view = CalendarView.Week;"
         [class.active]="view === CalendarView.Week">
         Week
       </div>
       <div
         class="btn btn-primary"
-        (click)="view = CalendarView.Day; changeEventList()"
+        (click)="view = CalendarView.Day;"
         [class.active]="view === CalendarView.Day">
         Day
       </div>
@@ -288,7 +288,7 @@
         </td>
         <td class="td-small">
             <input
-              type="text"
+              type="number"
               class="form-control recurringTime"
               [(ngModel)]="recurringEvent.recurringTimes"
               (keyup)="refresh.next()">
